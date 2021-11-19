@@ -6,7 +6,9 @@ import org.jboss.logging.Logger;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.naming.Name;
 import javax.persistence.EntityManager;
+import javax.persistence.NamedQuery;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
@@ -32,7 +34,13 @@ public class LocationRepository {
      */
     @Transactional
     public Location save(Location location) {
-        return null;
+        Location l = findByName(location.getName());
+
+        if (l!=null){
+            return l;
+        }
+
+        return em.merge(location);
     }
 
     /**
@@ -43,7 +51,16 @@ public class LocationRepository {
      * @return the location (with the given name) or null, when the name is not in the db
      */
     public Location findByName(String name) {
-        return null;
+        try {
+            TypedQuery<Location> query = em
+                    .createNamedQuery("Location.findByName", Location.class)
+                    .setParameter("NAME", name);
+
+            return query.getSingleResult();
+        }
+        catch (NoResultException e){
+            return null;
+        }
     }
 
     /**
@@ -52,6 +69,6 @@ public class LocationRepository {
      * @param stations
      */
     public void saveLocationBulk(List<String> stations) {
-
+        stations.forEach(s -> save(new Location(s)));
     }
 }

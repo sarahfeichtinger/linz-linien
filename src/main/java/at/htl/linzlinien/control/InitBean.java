@@ -132,7 +132,7 @@ public class InitBean {
      * @return
      */
     private List<String> parseRoute(String key) {
-        List<String> stationList = new ArrayList<>();
+        List<String> stationList = new LinkedList<>();
 
         try {
             Document doc = Jsoup.connect(lines.get(key)).get();
@@ -140,14 +140,13 @@ public class InitBean {
             for (Element station : stations) {
                 //logger.info(station.toString());
                 if (station.attr("title").startsWith("Haltestelle"))
-                    System.out.println(station.attr("title").replace("Haltestelle ", ""));
                     stationList.add(station.attr("title").replace("Haltestelle ", ""));
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        return null;
+        return stationList;
     }
 
 

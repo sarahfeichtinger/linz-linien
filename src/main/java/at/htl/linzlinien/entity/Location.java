@@ -3,9 +3,16 @@ package at.htl.linzlinien.entity;
 import javax.persistence.*;
 
 @Entity
+@NamedQueries({
+        @NamedQuery(
+                name = "Location.findByName",
+                query = "select l from Location l where l.name like :NAME"
+        )
+})
 public class Location {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "LO_NAME", unique = true)
