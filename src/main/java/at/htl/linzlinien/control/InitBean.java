@@ -1,6 +1,7 @@
 package at.htl.linzlinien.control;
 
 import at.htl.linzlinien.entity.Line;
+import at.htl.linzlinien.entity.Station;
 import io.quarkus.runtime.StartupEvent;
 import org.jboss.logging.Logger;
 import org.jsoup.Jsoup;
@@ -12,10 +13,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @ApplicationScoped
 public class InitBean {
@@ -115,7 +113,7 @@ public class InitBean {
             lineRepository.save(new Line(lineKey));
 
             // extract stations from HTML-page
-            List<String> stations = parseRoute(lines.get(lineKey));
+            List<String> stations = parseRoute(lineKey);
 
             // add Locations
             locationRepository.saveLocationBulk(stations);
@@ -130,22 +128,26 @@ public class InitBean {
      * All titles which begin with "Haltestelle"
      * Remove the substring "Haltestelle" from title
      *
-     * @param line
+     * @param key
      * @return
      */
-    private List<String> parseRoute(String line) {
+    private List<String> parseRoute(String key) {
+        List<String> stationList = new ArrayList<>();
+
         try {
-            Document doc = Jsoup.connect(line).get();
+            Document doc = Jsoup.connect(lines.get(key)).get();
             Elements stations = doc.select("li > a");
-            LOG.info("---------------------> Linie 2");
             for (Element station : stations) {
                 //logger.info(station.toString());
                 if (station.attr("title").startsWith("Haltestelle"))
-                    LOG.infof("%s", station.attr("title"));
+                    System.out.println(station.attr("title").replace("Haltestelle ", ""));
+                    stationList.add(station.attr("title").replace("Haltestelle ", ""));
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        return null;
     }
 
 
