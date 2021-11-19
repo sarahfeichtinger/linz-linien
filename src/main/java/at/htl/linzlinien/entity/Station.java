@@ -7,15 +7,16 @@ import javax.persistence.*;
 public class Station {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Transient
+    @ManyToOne
     private Line line;
 
-    @Transient
+    @ManyToOne
     private Location location;
 
-    @Transient
+    @ManyToOne(cascade = CascadeType.PERSIST)
     private Station prevStation;
 
     //region constructors

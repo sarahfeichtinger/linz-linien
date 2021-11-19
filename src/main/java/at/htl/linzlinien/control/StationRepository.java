@@ -36,7 +36,13 @@ public class StationRepository {
      * @param stations
      */
     public void saveStationsFromLine(String lineName, List<String> stations) {
+        Line line = lineRepository.findByName(lineName);
+        Station prevStation = null;
 
+        for (String station : stations) {
+            Location loc = locationRepository.findByName(station);
+            prevStation = save(new Station(line, loc, prevStation));
+        }
     }
 
     /**
